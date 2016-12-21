@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,6 +22,7 @@ public class SaveContactMessage implements Runnable {
     private boolean toRead;
     private String filename;
     private boolean option = false;
+    private String from, message;
 
     //to write
     public SaveContactMessage(ArrayList<String> list, Context context, String filename){
@@ -30,6 +30,7 @@ public class SaveContactMessage implements Runnable {
         this.context = context;
         this.filename = filename;
         this.toRead = false;
+        this.option = false;
     }
 
     //to read
@@ -37,12 +38,14 @@ public class SaveContactMessage implements Runnable {
         this.context = context;
         this.filename = filename;
         this.toRead = true;
+        this.option = false;
     }
 
-    public SaveContactMessage(ArrayList<String> list, Context context){
+    public SaveContactMessage(String from, String message, Context context){
         this.context = context;
-        this.list = list;
         this.option = true;
+        this.from = from;
+        this.message = message;
     }
 
     @Override
@@ -97,25 +100,15 @@ public class SaveContactMessage implements Runnable {
 
     private void writeBackgroundMessage(){
         try{
-            String[] splitted = list.get(0).split(" ");
-            String number = splitted[0].replace(":", "");
-
-            File file = new File("/" + number + ".txt");
+            File file = new File("/" + from + ".txt");
             FileOutputStream fOut = new FileOutputStream(context.getFilesDir().toString() + file, true);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fOut));
 
-            for(int i = 0; i < list.size(); i++){
-                splitted = list.get(i).split(" ");
-                splitted[0] = splitted[0].replace(":", "");
-                if(splitted[0].equals(number)){
-                    bw.write(splitted[0] + ": " + splitted[1]);
-                    bw.newLine();
-                    list.remove(i);
-                }//if
-            }//for
-            if(list.size() != 0)
-                writeBackgroundMessage();
+            bw.write(from + ": " + message);
+            bw.newLine();
 
+            bw.close();
+            fOut.close();
         }//try
         catch (IOException e) {
             e.printStackTrace();

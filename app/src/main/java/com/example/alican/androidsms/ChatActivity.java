@@ -19,7 +19,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-
 import Model.ChatObservable;
 import Model.SaveContactMessage;
 
@@ -43,7 +42,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.chat_window);
 
-        type = (Button) findViewById(R.id.type);
+        //type = (Button) findViewById(R.id.type);
         send = (Button) findViewById(R.id.send);
         content = (EditText) findViewById(R.id.message);
         listView = (ListView) findViewById(R.id.listView);
@@ -193,6 +192,9 @@ public class ChatActivity extends AppCompatActivity implements Observer{
             else{
                 System.out.println("message is from someone else");
                 otherMessages.add(splitted[0] + ": " + splitted[1]);
+                contactMessage = new SaveContactMessage(splitted[0],splitted[1], this);
+                Thread t1 = new Thread(contactMessage);
+                t1.start();
             }
         }
         else if(o instanceof ArrayList){
@@ -203,12 +205,12 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
         savedInstanceState.putString("messageType", messageType);
         savedInstanceState.putString("number", number);
         savedInstanceState.putString("name", name);
         savedInstanceState.putString("content", content.getText().toString());
         savedInstanceState.putStringArrayList("samtal", samtal);
+
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }//onSaveInstanceState
